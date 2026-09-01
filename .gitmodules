@@ -1,0 +1,6 @@
+[submodule "Icepack"]
+	path = Icepack
+	url = https://github.com/mollymwieringa/Icepack.git
+[submodule "mdf-toolkit"]
+	path = mdf-toolkit
+	url = https://gitlab.com/mdf-makers/mdf-toolkit.git
