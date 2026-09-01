@@ -1,0 +1,313 @@
+&setup_nml
+    days_per_year  = 365           ! # of days in one year
+    use_leap_years = .true.        ! if true, include leap days
+    year_init      = 2024          ! the initial year
+    istep0         = 7920          ! number of steps taken in a previous run
+    dt             = 3600.0        ! thermodynamics timestep (seconds)
+    npt            = 9600          ! total number of timesteps (to run)
+    ndtd           = 1             ! number of dynamics/advections steps under thermo
+    ice_ic         = '/Users/mollyw/Desktop/ARISE-AIM/Model/restarts/R4_iced.2024-11-26-00000.nc'        ! choice of initial conditions
+    hi_init_slab   = 0.5
+    hsno_init_slab = 0.033
+    hbar_init_itd  = 0.5
+    hsno_init_itd  = 0.033
+    sst_init       = -1.8          ! initial mixed layer temperature
+    restart        = .true.       ! if true, initialize from restart
+    restart_dir    = './restart/'  ! path to restart files
+    restart_format = 'nc'          ! format of restart files
+    dumpfreq       = 'd'           ! frequency of restart dumps
+    dump_last      = .false.       ! ?
+    diagfreq       = 24            ! how often diagnostic output is written
+    diag_file      = 'ice_diag'    ! diagnostic output file name
+    history_format = 'nc'          ! writes history output as netcdf if set to 'nc'
+    cpl_bgc        = .false.
+    conserv_check  = .false.       ! if true, check conservation
+    itd_area_min   = 1.e-11
+    itd_mass_min   = 1.e-10
+/
+
+&grid_nml
+    kcatbound    = 1                ! category boundary formula
+/
+
+&tracer_nml
+    tr_iage      = .true.           ! use ice age tracer
+    tr_FY        = .true.           ! use first-year ice tracer
+    tr_lvl       = .true.           ! use level ice area and volume tracers
+    tr_pond_topo = .false.          ! use topo melt pond scheme
+    tr_pond_lvl  = .false.          ! use level-ice melt pond scheme
+    tr_pond_sealvl = .true.         ! use sea level melt pond scheme
+    tr_snow      = .true.           ! use snow area and volume tracers
+    tr_aero      = .false.          ! use aerosol tracers
+    tr_fsd       = .false.          ! use floe size distribution tracer
+    tr_iso       = .false.          ! use water isotope tracers
+/
+
+&thermo_nml
+    kitd              = 0           ! itd remapping scheme 
+    ktherm            = 2           ! thermodynamics scheme (mushy = 2)
+    hi_min            = 0.01        ! minimum ice thickness (m) for thinnest ice cat.
+    ksno              = 0.3d0       ! snow thermal conductivity (W/m/K)
+    conduct           = 'bubbly'    ! conductivity parameterization
+    a_rapid_mode      =  1.0e-3     ! brine channel diameter
+    Rac_rapid_mode    =    10.0     ! critical Rayleigh number
+    aspect_rapid_mode =     1.0     ! brine convection aspect ratio
+    dSdt_slow_mode    = -1.5e-7     ! drainage strength parameter
+    phi_c_slow_mode   =    0.05     ! critical liquid fraction
+    phi_i_mushy       =    0.45     ! solid fraction at lower boundary
+    Tliquidus_max     =   0.0d0     ! maximum liquidus temperature of mush (C)
+    floediam          = 300.0d0     ! effective floe diameter for lateral melt (m)
+    hfrazilmin        =  0.05d0     ! minimum thickness of new frazil ice (m)
+    tscale_pnd_drain  =   0.5d0
+    landfast          = .true.
+/
+
+&shortwave_nml
+    shortwave       = 'dEdd'
+    albedo_type     = 'ccsm3'
+    albicev         = 0.78
+    albicei         = 0.36
+    albsnowv        = 0.98
+    albsnowi        = 0.70
+    ahmax           = 0.3
+    R_ice           = 0.
+    R_pnd           = 0.
+    R_snw           = -2.0
+    dT_mlt          = 1.5
+    rsnw_mlt        = 1500.
+    kalg            = 0.6
+    sw_redist       = .false.
+    sw_frac         = 0.9d0
+    sw_dtemp        = 0.02d0
+    snw_ssp_table   = 'unknown_snw_ssp_table'
+/
+
+&ponds_nml
+    hp1             = 0.01
+    hs0             = 0.03
+    hs1             = 0.03
+    dpscale         = 1.e-3
+    frzpnd          = 'hlid'
+    rfracmin        = 0.15
+    rfracmax        = 1.0
+    pndaspect       = 0.8
+    apnd_sl         = 0.27d0
+/
+
+&snow_nml
+    snwredist       = 'bulk'
+    snwgrain        = .false.
+    use_smliq_pnd   = .false.
+    rsnw_fall       = 56.526
+    rsnw_tmax       = 1500.0
+    rhosnew         =  100.0
+    rhosmin         =  100.0
+    rhosmax         =  450.0
+    windmin         =   10.0
+    drhosdwind      =   27.3
+    snwlvlfac       =    0.3
+    snw_aging_table = 'test'
+    snw_growth_wet  = 4.22e5
+    drsnw_min       =  0.0
+    snwliq_max      =  0.033
+/
+
+&forcing_nml
+    formdrag        = .false.       ! calculate form drag
+    atmbndy         = 'similarity'  ! atmospheric boundary layere parameterization
+    calc_strair     = .true.        ! calculate wind stress
+    calc_Tsfc       = .true.        ! calculate surface temperature
+    highfreq        = .false.       ! use high-frequency atmospheric coupling
+    natmiter        = 5             ! number of boundary layer iterations
+    atmiter_conv    = 0.0d0         ! convergence criteria for ustar
+    ustar_min       = 0.0005        ! minimum friction velocity under ice (m/s)
+    calc_dragio     = .false.       ! calculate dragio from iceruf_ocn and thickness_ocn_layer1
+    emissivity      = 0.985         ! emissivity of snow and ice
+    fbot_xfer_type  = 'constant'    ! type of heat transfer coefficient under ice
+    cpl_frazil      = 'fresh_ice_correction' ! type of frazil ice coupling
+    update_ocn_f    = .false.       ! include frazil ice fluxes in ocean flux fields
+    l_mpond_fresh   = .false.       ! retain pond water until drainage in topo scheme
+    congel_freeze   = 'one-step'    ! ?
+    tfrz_option     = 'mushy'       ! form of ocean freezing temperature
+    ice_ref_salinity = 4.0          ! reference salinity for ice-ocean exchanges
+    saltflux_option = 'prognostic'  ! type of salinity fluxes
+    oceanmixed_ice  = .true.        ! if true, use internal ocean mixed layer
+    wave_spec_type  = 'none'        ! ?
+    restore_ocn     = .false.       ! restore sst to data
+    trestore        = 90            ! restoring timescale (days)
+    sss_fixed       = 29.0          ! constant mixed layer salinity
+    qdp_fixed       = 0.0           ! constant mixed layer heat flux (W/m^2)
+    hmix_fixed      = 15.0          ! constant mixed layer depth (m)
+    precip_units    = 'mks'         ! units for precipitation (mks, cgs, or mm)
+    default_season  = 'winter'      ! season with which to initialize fluxes in init_coupler_flux
+    atm_data_type   = 'MDF'         ! type of atmospheric forcing
+    ocn_data_type   = 'default'         ! type of ocean forcing
+    hose_data_type  = 'HOSING'     ! hosing off (default) or on (HOSING)
+    bgc_data_type   = 'default'     ! type of biogeochemical forcing
+    lateral_flux_type   = 'uniform_ice' ! how to address ice closures / replacement 
+    fyear_init      = 2024          ! initial forcing year
+    ycycle          = 2             ! number of years in forcing data cycle
+    data_dir        = '/Users/mollyw/Desktop/ARISE-AIM/Model/forcing'
+    atm_data_file   = 'CambridgeBay_atm_MDF.nc'
+    ocn_data_file   = 'unknown_ocn_data_file'
+    bgc_data_file   = 'unknown_bgc_data_file'
+    hose_data_file  = 'R4_hosing.dat'
+    ice_data_file   = 'open_clos_lindsay.dat'
+    atm_data_format = 'nc'
+    ocn_data_format = 'nc'
+    bgc_data_format = 'bin'
+    precalc_forc    = .true.        ! average / interpolate forcing data on initialization
+    semi_implicit_Tsfc = .false.    ! ?
+    vapor_flux_correction = .false. ! ? 
+/
+
+&dynamics_nml
+    kstrength       = 1             ! ice strength formulation 
+    krdg_partic     = 1             ! ridging participation function
+    krdg_redist     = 1             ! ridging redistribution function
+    mu_rdg          = 3             ! e-folding scale of ridged ice
+    Cf              = 17            ! ratio of ridging work to PE change in ridging
+/
+
+&zbgc_nml
+    tr_brine        = .false.
+    tr_zaero        = .false.
+    modal_aero      = .false.
+    skl_bgc         = .false.
+    z_tracers       = .false.
+    dEdd_algae      = .false.
+    solve_zbgc      = .false.
+    bgc_flux_type   = 'Jin2006'
+    scale_bgc       = .false.
+    tr_bgc_Nit      = .false.
+    tr_bgc_C        = .false.
+    tr_bgc_chl      = .false.
+    tr_bgc_Am       = .false.
+    tr_bgc_Sil      = .false.
+    tr_bgc_DMS      = .false.
+    tr_bgc_PON      = .false.
+    tr_bgc_hum      = .false.
+    tr_bgc_DON      = .false.
+    tr_bgc_Fe       = .false.
+    grid_o          = 0.006
+    grid_o_t        = 0.006
+    l_sk            = 2.0
+    phi_snow        = -1.0
+    initbio_frac    = 1.0
+    frazil_scav     = 0.8
+    ratio_Si2N_diatoms = 1.8
+    ratio_Si2N_sp      = 0.0
+    ratio_Si2N_phaeo   = 0.0
+    ratio_S2N_diatoms  = 0.03
+    ratio_S2N_sp       = 0.03
+    ratio_S2N_phaeo    = 0.03
+    ratio_Fe2C_diatoms = 0.0033
+    ratio_Fe2C_sp      = 0.0033
+    ratio_Fe2C_phaeo   = 0.1
+    ratio_Fe2N_diatoms = 0.023
+    ratio_Fe2N_sp      = 0.023
+    ratio_Fe2N_phaeo   = 0.7
+    ratio_Fe2DON       = 0.023
+    ratio_Fe2DOC_s     = 0.1
+    ratio_Fe2DOC_l     = 0.033
+    fr_resp            = 0.05
+    tau_min            = 3600.0
+    tau_max            = 604800.0
+    algal_vel          = 0.0000001
+    R_dFe2dust         = 0.035
+    dustFe_sol         = 0.005
+    chlabs_diatoms     = 0.03
+    chlabs_sp          = 0.01
+    chlabs_phaeo       = 0.05
+    alpha2max_low_diatoms = 0.3
+    alpha2max_low_sp   = 0.2
+    alpha2max_low_phaeo = 0.17
+    beta2max_diatoms   = 0.001
+    beta2max_sp        = 0.001
+    beta2max_phaeo     = 0.04
+    mu_max_diatoms     = 1.44
+    mu_max_sp          = 0.41
+    mu_max_phaeo       = 0.63
+    grow_Tdep_diatoms  = 0.063
+    grow_Tdep_sp       = 0.063
+    grow_Tdep_phaeo    = 0.063
+    fr_graze_diatoms   = 0.19
+    fr_graze_sp        = 0.19
+    fr_graze_phaeo     = 0.19
+    mort_pre_diatoms   = 0.007
+    mort_pre_sp        = 0.007
+    mort_pre_phaeo     = 0.007
+    mort_Tdep_diatoms  = 0.03
+    mort_Tdep_sp       = 0.03
+    mort_Tdep_phaeo    = 0.03
+    k_exude_diatoms    = 0.0
+    k_exude_sp         = 0.0
+    k_exude_phaeo      = 0.0
+    K_Nit_diatoms      = 1.0
+    K_Nit_sp           = 1.0
+    K_Nit_phaeo        = 1.0
+    K_Am_diatoms       = 0.3
+    K_Am_sp            = 0.3
+    K_Am_phaeo         = 0.3
+    K_Sil_diatoms      = 4.0
+    K_Sil_sp           = 0.0
+    K_Sil_phaeo        = 0.0
+    K_Fe_diatoms       = 1.0
+    K_Fe_sp            = 0.2
+    K_Fe_phaeo         = 0.1
+    f_don_protein      = 0.6
+    kn_bac_protein     = 0.2
+    f_don_Am_protein   = 1.0
+    f_doc_s            = 0.5
+    f_doc_l            = 0.5
+    f_exude_s          = 1.0
+    f_exude_l          = 1.0
+    k_bac_s            = 0.03
+    k_bac_l            = 0.03
+    T_max              = 0.0
+    fsal               = 1.0
+    op_dep_min         = 0.1
+    fr_graze_s         = 0.5
+    fr_graze_e         = 0.5
+    fr_mort2min        = 0.9
+    fr_dFe             = 1.0
+    k_nitrif           = 0.046
+    t_iron_conv        = 3065.0
+    max_loss           = 0.9
+    max_dfe_doc1       = 0.2
+    fr_resp_s          = 0.9
+    y_sk_DMS           = 0.7
+    t_sk_conv          = 5.0
+    t_sk_ox            = 12.0
+    algaltype_diatoms  = 0.0
+    algaltype_sp       = 0.0
+    algaltype_phaeo    = 0.0
+    nitratetype        = -1.0
+    ammoniumtype       = 0.0
+    silicatetype       = -1.0
+    dmspptype          = 0.5
+    dmspdtype          = 0.0
+    humtype            = 0.0
+    doctype_s          = 0.0
+    doctype_l          = 0.0
+    dontype_protein    = 0.0
+    fedtype_1          = 0.0
+    feptype_1          = 0.5
+    zaerotype_bc1      = -1.0
+    zaerotype_bc2      = -1.0
+    zaerotype_dust1    = -1.0
+    zaerotype_dust2    = -1.0
+    zaerotype_dust3    = -1.0
+    zaerotype_dust4    = -1.0
+    ratio_C2N_diatoms  = 7.0
+    ratio_C2N_sp       = 7.0
+    ratio_C2N_phaeo    = 7.0
+    ratio_chl2N_diatoms= 2.1
+    ratio_chl2N_sp     = 1.1
+    ratio_chl2N_phaeo  = 0.84
+    F_abs_chl_diatoms  = 2.0
+    F_abs_chl_sp       = 4.0
+    F_abs_chl_phaeo    = 5.0
+    ratio_C2N_proteins = 5.0
+/
+
